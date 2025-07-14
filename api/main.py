@@ -1,18 +1,23 @@
 from fastapi import FastAPI
-from simulation.engine import SimulationEngine
-from agents.base_agent import create_base_agent
+from .tasks import run_simulation_task
 
 app = FastAPI()
 
 @app.post("/simulation")
 def run_simulation_endpoint(epochs: int = 100, num_agents: int = 1):
     """
-    Runs a simulation with the specified number of agents and epochs.
+    Triggers a simulation task to run in the background.
     """
-    agents = [create_base_agent(f"agent_{i}") for i in range(num_agents)]
-    engine = SimulationEngine(agents)
-    engine.run_simulation(epochs)
+    task = run_simulation_task.delay(epochs, num_agents)
+    return {"task_id": task.id}
 
-    # For simplicity, we'll just return the final state of the first agent.
-    final_state = engine.agents[0].omega_t.tolist()
-    return {"final_state": final_state}
+@app.get("/simulation/{task_id}")
+def get_simulation_result(task_id: str):
+    """
+    Retrieves the result of a simulation task.
+    """
+    task = run_simulation_task.AsyncResult(task_id)
+    if task.ready():
+        return {"status": "SUCCESS", "result": task.result}
+    else:
+        return {"status": "PENDING"}
