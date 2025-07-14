@@ -1,0 +1,14 @@
+numpy
+scipy
+torch
+plotly
+# d3.js is a frontend library, not a Python package
+zarr
+h5py
+psycopg2-binary
+redis
+docker
+fastapi
+uvicorn
+celery
+# react is a frontend library, not a Python package
