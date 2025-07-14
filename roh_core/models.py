@@ -9,7 +9,15 @@ class NoeticAgent:
         self.epsilon_emergence = False
         self.per_active = False
         self.goal_state = np.zeros_like(self.omega_t)
-        self.memory_graph = None  # To be implemented
+        self.memory_graph = {}  # Using a simple dict as a graph for now
+
+    def add_memory(self, node, connections):
+        """Adds a new memory node and its connections to the graph."""
+        self.memory_graph[node] = connections
+
+    def get_memory(self, node):
+        """Retrieves a memory node from the graph."""
+        return self.memory_graph.get(node)
 
 class PhenomenalField:
     def __init__(self):
